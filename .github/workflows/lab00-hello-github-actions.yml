@@ -1,11 +1,39 @@
+# Name of the workflow
 name: Lab00 Hello GitHub Actions
+# How the workflow run is named in GitHub
 run-name: Lab00 - ${{ github.actor }} is testing out GitHub Actions 🚀
 permissions: read-all
+# Set your preferences for the script
+defaults:
+  run:
+    shell: pwsh
 on:
+  # Make it possible to other workflows to call this
+  workflow_call:
+  # Make it possible to manually trigger the workflow
   workflow_dispatch:
+# The actual jobs that will be run
 jobs:
-  example-job:
+  # Job named Hello-job
+  Hello-job:
     runs-on: ubuntu-latest
+    # Steps that are being run to complete the job
     steps:
       - name: Run hello world
         run: echo "🎉 Step of the job is running on ${{ runner.os }}!"
+  # Job named Build-job that builds the example applications
+  Build-job:
+    runs-on: ubuntu-latest
+    steps:
+      # Check out the git repository
+      - name: Checkout
+        uses: actions/checkout@v4
+      # Ensure proper version of .NET
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "8.0.x"
+      - name: Install .NET dependencies
+        run: dotnet restore
+      - name: Build application
+        run: dotnet build
